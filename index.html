@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Priceless Capture | Drawing Book Stories</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Caveat', cursive, 'Segoe UI', system-ui, sans-serif;
+        }
+
+        :root {
+            --primary: #000;
+            --secondary: #fff;
+            --paper: #fef9e7;
+            --paper-line: #e8dfca;
+            --text: #1a1a1a;
+            --text-light: #666;
+            --border: #e0e0e0;
+            --hand-drawn-color: #000;
+            --crayon-red: #ff6b6b;
+            --crayon-blue: #4d96ff;
+            --crayon-green: #6bcf7f;
+        }
+
+        body {
+            background-color: var(--secondary);
+            color: var(--text);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Loading Animation */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--primary);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease, transform 1s ease;
+        }
+
+        .loader {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .loader-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            border-top: 2px solid var(--secondary);
+            animation: spin 1.5s linear infinite;
+        }
+
+        .loader-ring:nth-child(2) {
+            width: 80%;
+            height: 80%;
+            border-top: 2px solid var(--secondary);
+            animation: spin 1.2s linear infinite reverse;
+        }
+
+        .loader-ring:nth-child(3) {
+            width: 60%;
+            height: 60%;
+            border-top: 2px solid var(--secondary);
+            animation: spin 0.9s linear infinite;
+        }
+
+        .loader-letter {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--secondary);
+            z-index: 10;
+            animation: pulse 2s infinite;
+        }
+
+        .loading-text {
+            color: var(--secondary);
+            font-size: 18px;
+            letter-spacing: 2px;
+            margin-top: 20px;
+            opacity: 0.8;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.9; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Main Content */
+        #main-content {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            padding: 80px 0 40px;
+            text-align: center;
+            position: relative;
+        }
+
+        .logo {
+            font-size: 52px;
+            font-weight: 800;
+            letter-spacing: 3px;
+            margin-bottom: 30px;
+            color: var(--primary);
+            position: relative;
+            display: inline-block;
+        }
+
+        .logo::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background-color: var(--primary);
+        }
+
+        .quote {
+            font-size: 26px;
+            font-style: italic;
+            color: var(--text-light);
+            margin-bottom: 50px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.5;
+            position: relative;
+            padding: 0 20px;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .quote::before, .quote::after {
+            content: """;
+            font-size: 40px;
+            color: var(--text-light);
+            opacity: 0.3;
+            position: absolute;
+            top: -10px;
+        }
+
+        .quote::before {
+            left: 0;
+        }
+
+        .quote::after {
+            right: 0;
+        }
+
+        /* Categories Grid */
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 35px;
+            padding: 30px 0 80px;
+        }
+
+        .category-card {
+            background: var(--secondary);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .category-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .category-image {
+            height: 240px;
+            width: 100%;
+            background-color: var(--accent);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .category-image::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .category-card:hover .category-image::after {
+            opacity: 1;
+        }
+
+        .category-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .category-card:hover .category-image img {
+            transform: scale(1.08);
+        }
+
+        .category-info {
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .category-name {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .category-icon {
+            font-size: 26px;
+            color: var(--text-light);
+            transition: transform 0.3s ease;
+        }
+
+        .category-card:hover .category-icon {
+            transform: translateX(5px);
+        }
+
+        /* Drawing Book Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+            animation: modalAppear 0.5s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+        }
+
+        @keyframes modalAppear {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--secondary);
+            font-size: 32px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            z-index: 10;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-close:hover {
+            transform: rotate(90deg);
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        /* Drawing Book Layout */
+        .drawing-book {
+            width: 90vw;
+            height: 80vh;
+            background-color: var(--paper);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: 30px;
+        }
+
+        .drawing-book::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(var(--paper-line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--paper-line) 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.3;
+            z-index: 1;
+        }
+
+        .drawing-book::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 50px;
+            width: 2px;
+            height: 100%;
+            background: repeating-linear-gradient(
+                to bottom,
+                transparent,
+                transparent 19px,
+                var(--paper-line) 19px,
+                var(--paper-line) 20px
+            );
+            opacity: 0.5;
+        }
+
+        .book-title {
+            font-size: 36px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--primary);
+            position: relative;
+            z-index: 2;
+        }
+
+        .book-title::after {
+            content: "";
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background-color: var(--crayon-red);
+        }
+
+        .story-pages {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+            z-index: 2;
+        }
+
+        .story-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            padding: 20px;
+        }
+
+        .page-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            width: 100%;
+            height: 100%;
+        }
+
+        .story-image-container {
+            width: 300px;
+            height: 300px;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border: 2px solid var(--hand-drawn-color);
+        }
+
+        .story-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Hand-Drawn Elements */
+        .hand-drawn-frame {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border: 2px dashed var(--hand-drawn-color);
+            border-radius: 12px;
+            opacity: 0.5;
+        }
+
+        .crayon-border {
+            position: absolute;
+            top: -15px;
+            left: -15px;
+            right: -15px;
+            bottom: -15px;
+            border: 3px solid var(--crayon-blue);
+            border-radius: 15px;
+            opacity: 0.7;
+        }
+
+        /* Drawing Animations */
+        .drawing-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        .doodle-1 {
+            position: absolute;
+            top: 10%;
+            right: 10%;
+            width: 80px;
+            height: 80px;
+        }
+
+        .doodle-2 {
+            position: absolute;
+            bottom: 15%;
+            left: 10%;
+            width: 60px;
+            height: 60px;
+        }
+
+        .doodle-3 {
+            position: absolute;
+            top: 40%;
+            left: 5%;
+            width: 50px;
+            height: 50px;
+        }
+
+        .doodle-path {
+            fill: none;
+            stroke: var(--crayon-green);
+            stroke-width: 2;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: drawDoodle 4s ease-in-out infinite;
+        }
+
+        @keyframes drawDoodle {
+            0% {
+                stroke-dashoffset: 1000;
+            }
+            50% {
+                stroke-dashoffset: 0;
+            }
+            100% {
+                stroke-dashoffset: 1000;
+            }
+        }
+
+        /* Hand-Drawn Arrows */
+        .hand-drawn-arrow {
+            position: relative;
+            width: 150px;
+            height: 80px;
+            z-index: 2;
+        }
+
+        .curly-arrow {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .curly-arrow-path {
+            fill: none;
+            stroke: var(--hand-drawn-color);
+            stroke-width: 3;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: drawArrow 3s ease-in-out infinite;
+        }
+
+        @keyframes drawArrow {
+            0% {
+                stroke-dashoffset: 1000;
+            }
+            50% {
+                stroke-dashoffset: 0;
+            }
+            100% {
+                stroke-dashoffset: 1000;
+            }
+        }
+
+        .arrow-head {
+            fill: var(--hand-drawn-color);
+            animation: pulseArrow 3s ease-in-out infinite;
+        }
+
+        @keyframes pulseArrow {
+            0%, 100% {
+                opacity: 0.7;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        /* Story Navigation */
+        .story-nav {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            z-index: 2;
+        }
+
+        .story-nav button {
+            background: var(--paper);
+            border: 2px solid var(--hand-drawn-color);
+            color: var(--primary);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .story-nav button::before {
+            content: "";
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border: 1px dashed var(--hand-drawn-color);
+            border-radius: 50%;
+            opacity: 0.5;
+        }
+
+        .story-nav button:hover {
+            background: rgba(0, 0, 0, 0.05);
+            transform: scale(1.1);
+        }
+
+        .story-nav button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Page Counter */
+        .page-counter {
+            position: absolute;
+            bottom: 20px;
+            right: 30px;
+            font-size: 18px;
+            color: var(--text-light);
+            z-index: 2;
+        }
+
+        /* Footer */
+        footer {
+            padding: 60px 0;
+            text-align: center;
+            border-top: 1px solid var(--border);
+            color: var(--text-light);
+            background-color: var(--accent);
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .social-icons a {
+            color: var(--text-light);
+            font-size: 22px;
+            transition: all 0.3s ease;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--secondary);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .social-icons a:hover {
+            color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .categories-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 25px;
+            }
+            
+            .story-image-container {
+                width: 250px;
+                height: 250px;
+            }
+            
+            .hand-drawn-arrow {
+                width: 100px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .categories-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 20px;
+            }
+            
+            .quote {
+                font-size: 22px;
+            }
+            
+            .logo {
+                font-size: 42px;
+            }
+            
+            .category-image {
+                height: 200px;
+            }
+            
+            .story-image-container {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .page-content {
+                flex-direction: column;
+            }
+            
+            .hand-drawn-arrow {
+                transform: rotate(90deg);
+                margin: 20px 0;
+            }
+            
+            .drawing-book {
+                height: 85vh;
+                padding: 20px;
+            }
+            
+            .book-title {
+                font-size: 28px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .quote {
+                font-size: 20px;
+            }
+            
+            .logo {
+                font-size: 36px;
+            }
+            
+            .story-image-container {
+                width: 180px;
+                height: 180px;
+            }
+            
+            .drawing-book {
+                padding: 15px;
+                width: 95vw;
+                height: 90vh;
+            }
+            
+            .page-content {
+                padding: 10px;
+            }
+            
+            .hand-drawn-arrow {
+                width: 80px;
+                height: 60px;
+            }
+            
+            .story-nav button {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+            
+            .page-counter {
+                bottom: 10px;
+                right: 15px;
+                font-size: 16px;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loader">
+            <div class="loader-ring"></div>
+            <div class="loader-ring"></div>
+            <div class="loader-ring"></div>
+            <div class="loader-letter">R</div>
+        </div>
+        <div class="loading-text">PRICELESS CAPTURE</div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="main-content">
+        <header>
+            <div class="container">
+                <h1 class="logo">PRICELESS CAPTURE</h1>
+                <p class="quote">isn't it nice when someone makes you feel special ?</p>
+            </div>
+        </header>
+
+        <main>
+            <div class="container">
+                <div class="categories-grid" id="categories-grid">
+                    <!-- Categories will be populated by JavaScript -->
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <div class="container">
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-pinterest"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+                <p>&copy; 2023 Priceless Capture. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Drawing Book Modal -->
+    <div class="modal" id="story-modal">
+        <div class="modal-content">
+            <button class="modal-close" id="story-modal-close"><i class="fas fa-times"></i></button>
+            <div class="drawing-book">
+                <h2 class="book-title" id="story-title">Wedding Story</h2>
+                <div class="story-pages" id="story-pages">
+                    <!-- Story pages will be populated by JavaScript -->
+                </div>
+                <div class="story-nav">
+                    <button id="story-prev-btn" disabled><i class="fas fa-chevron-left"></i></button>
+                    <button id="story-next-btn"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                <div class="page-counter" id="page-counter">1/3</div>
+                
+                <!-- Drawing Animations -->
+                <div class="drawing-animation">
+                    <div class="doodle-1">
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <path class="doodle-path" d="M10,50 Q25,25 50,10 Q75,25 90,50 Q75,75 50,90 Q25,75 10,50" />
+                        </svg>
+                    </div>
+                    <div class="doodle-2">
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <path class="doodle-path" d="M20,20 L80,20 L80,80 L20,80 Z" />
+                        </svg>
+                    </div>
+                    <div class="doodle-3">
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <path class="doodle-path" d="M50,10 Q90,50 50,90 Q10,50 50,10" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Category data with images
+        const categories = [
+            {
+                name: "Wedding",
+                icon: "fas fa-ring",
+                images: [
+                    "https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+                    "https://images.unsplash.com/photo-1465495976277-4387d4b0e4a6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+                    "https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+                ]
+            },
+            {
+                name: "Kids",
+                icon: "fas fa-child",
+                images: [
+                    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+                    "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+                    "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+                ]
+            },
+            {
+                name: "Newborn",
+                icon: "fas fa-baby",
+                images: [
+                    "https://images.unsplash.com/photo-1530041539828-114de669390e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+                    "https://images.unsplash.com/photo-1502773860574-76f1c3222f6c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+                    "https://images.unsplash.com/photo-1504214208698-ea1916e5d383?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+                ]
+            },
+            {
+                name: "Family",
+                icon: "fas fa-users",
+                images: [
+                    "https://images.unsplash.com/photo-1511988617509-a57c8a288659?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+                    "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+                    "https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+                ]
+            }
+        ];
+
+        // DOM Elements
+        const loadingScreen = document.getElementById('loading-screen');
+        const mainContent = document.getElementById('main-content');
+        const categoriesGrid = document.getElementById('categories-grid');
+        const quoteElement = document.querySelector('.quote');
+        
+        // Story modal elements
+        const storyModal = document.getElementById('story-modal');
+        const storyModalClose = document.getElementById('story-modal-close');
+        const storyTitle = document.getElementById('story-title');
+        const storyPages = document.getElementById('story-pages');
+        const storyPrevBtn = document.getElementById('story-prev-btn');
+        const storyNextBtn = document.getElementById('story-next-btn');
+        const pageCounter = document.getElementById('page-counter');
+
+        // Current image state for modal
+        let currentCategoryIndex = 0;
+        let currentPageIndex = 0;
+
+        // Initialize the gallery
+        function initGallery() {
+            // Populate categories
+            categories.forEach((category, index) => {
+                const categoryCard = document.createElement('div');
+                categoryCard.className = 'category-card';
+                categoryCard.innerHTML = `
+                    <div class="category-image">
+                        <img src="${category.images[0]}" alt="${category.name}">
+                    </div>
+                    <div class="category-info">
+                        <h3 class="category-name">${category.name}</h3>
+                        <div class="category-icon">
+                            <i class="${category.icon}"></i>
+                        </div>
+                    </div>
+                `;
+                
+                // Add click event to open story modal
+                categoryCard.addEventListener('click', () => {
+                    openStoryModal(index);
+                });
+                
+                categoriesGrid.appendChild(categoryCard);
+            });
+            
+            // Animate categories with GSAP
+            gsap.to('.category-card', {
+                duration: 0.8,
+                opacity: 1,
+                y: 0,
+                stagger: 0.15,
+                ease: "power2.out",
+                delay: 0.5
+            });
+        }
+
+        // Open story modal
+        function openStoryModal(categoryIndex) {
+            currentCategoryIndex = categoryIndex;
+            currentPageIndex = 0;
+            
+            const category = categories[categoryIndex];
+            storyTitle.textContent = `${category.name} Story`;
+            
+            // Populate story pages
+            storyPages.innerHTML = '';
+            
+            category.images.forEach((image, index) => {
+                const storyPage = document.createElement('div');
+                storyPage.className = 'story-page';
+                storyPage.style.display = index === 0 ? 'flex' : 'none';
+                
+                // Create page content with image and decorative elements
+                storyPage.innerHTML = `
+                    <div class="page-content">
+                        ${index > 0 ? `
+                            <div class="hand-drawn-arrow">
+                                <div class="curly-arrow">
+                                    <svg viewBox="0 0 150 80" xmlns="http://www.w3.org/2000/svg">
+                                        <path class="curly-arrow-path" d="M10,40 C30,10 120,10 140,40" />
+                                        <path class="arrow-head" d="M140,40 L130,35 L130,45 Z" />
+                                    </svg>
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        <div class="story-image-container">
+                            <img src="${image}" alt="${category.name} page ${index+1}" class="story-image">
+                            <div class="hand-drawn-frame"></div>
+                            <div class="crayon-border"></div>
+                        </div>
+                        
+                        ${index < category.images.length - 1 ? `
+                            <div class="hand-drawn-arrow">
+                                <div class="curly-arrow">
+                                    <svg viewBox="0 0 150 80" xmlns="http://www.w3.org/2000/svg">
+                                        <path class="curly-arrow-path" d="M10,40 C30,70 120,70 140,40" />
+                                        <path class="arrow-head" d="M140,40 L130,35 L130,45 Z" />
+                                    </svg>
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+                
+                storyPages.appendChild(storyPage);
+            });
+            
+            updateStoryNav();
+            storyModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Animate modal appearance with GSAP
+            gsap.fromTo('.drawing-book', 
+                { scale: 0.8, opacity: 0 }, 
+                { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(1.7)" }
+            );
+            
+            // Animate page elements
+            gsap.fromTo('.story-image-container', 
+                { scale: 0.5, opacity: 0 }, 
+                { scale: 1, opacity: 1, duration: 0.6, delay: 0.3, ease: "power2.out" }
+            );
+        }
+
+        // Update story navigation
+        function updateStoryNav() {
+            const category = categories[currentCategoryIndex];
+            storyPrevBtn.disabled = currentPageIndex === 0;
+            storyNextBtn.disabled = currentPageIndex === category.images.length - 1;
+            
+            // Update page counter
+            pageCounter.textContent = `${currentPageIndex + 1}/${category.images.length}`;
+            
+            // Show current page, hide others
+            const pages = document.querySelectorAll('.story-page');
+            pages.forEach((page, index) => {
+                if (index === currentPageIndex) {
+                    page.style.display = 'flex';
+                    // Animate page transition
+                    gsap.fromTo(page, 
+                        { x: index > currentPageIndex ? 100 : -100, opacity: 0 }, 
+                        { x: 0, opacity: 1, duration: 0.5, ease: "power2.out" }
+                    );
+                } else {
+                    page.style.display = 'none';
+                }
+            });
+        }
+
+        // Navigate to previous page
+        function prevPage() {
+            if (currentPageIndex > 0) {
+                currentPageIndex--;
+                updateStoryNav();
+            }
+        }
+
+        // Navigate to next page
+        function nextPage() {
+            const category = categories[currentCategoryIndex];
+            if (currentPageIndex < category.images.length - 1) {
+                currentPageIndex++;
+                updateStoryNav();
+            }
+        }
+
+        // Close story modal
+        function closeStoryModal() {
+            // Animate modal close with GSAP
+            gsap.to('.drawing-book', {
+                scale: 0.8,
+                opacity: 0,
+                duration: 0.4,
+                ease: "power2.in",
+                onComplete: () => {
+                    storyModal.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                }
+            });
+        }
+
+        // Event Listeners
+        storyModalClose.addEventListener('click', closeStoryModal);
+        storyPrevBtn.addEventListener('click', prevPage);
+        storyNextBtn.addEventListener('click', nextPage);
+
+        // Close modal when clicking outside the content
+        storyModal.addEventListener('click', (e) => {
+            if (e.target === storyModal) {
+                closeStoryModal();
+            }
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (storyModal.classList.contains('active')) {
+                if (e.key === 'Escape') closeStoryModal();
+                if (e.key === 'ArrowLeft') prevPage();
+                if (e.key === 'ArrowRight') nextPage();
+            }
+        });
+
+        // Initialize the page
+        window.addEventListener('load', () => {
+            // Simulate loading time
+            setTimeout(() => {
+                loadingScreen.style.opacity = '0';
+                loadingScreen.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                    mainContent.style.opacity = '1';
+                    mainContent.style.transform = 'translateY(0)';
+                    
+                    // Animate quote with GSAP
+                    gsap.to(quoteElement, {
+                        duration: 1,
+                        opacity: 1,
+                        y: 0,
+                        ease: "power2.out",
+                        delay: 0.3
+                    });
+                    
+                    initGallery();
+                }, 800);
+            }, 2500);
+        });
+    </script>
+</body>
+</html>
